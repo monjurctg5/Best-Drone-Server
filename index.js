@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const { MongoClient } = require('mongodb');
 require('dotenv').config()
-
+const ObjectId = require('mongodb').ObjectId
 const app= express()
 const port = 5000;
 
@@ -18,19 +18,65 @@ client.connect(err => {
 	console.log("data base connected")
   const userCollection = client.db("Best-Drone").collection("users");
   const productColection = client.db("Best-Drone").collection("Products");
-  const serviceColection = client.db("Best-Drone").collection("Orders");
+  const OrdersColection = client.db("Best-Drone").collection("Orders");
+  const reviewColection = client.db("Best-Drone").collection("Review");
 
 
 // perform actions on the collection object
 
 //get all service
 
+app.get('/products/home',async(req,res)=>{
+  const cursor = productColection.find({})
+  const result = await cursor.limit(6).toArray()
+  res.send(result)
+  // console.log(result)
+})
 app.get('/products',async(req,res)=>{
   const cursor = productColection.find({})
   const result = await cursor.toArray()
   res.send(result)
   // console.log(result)
 })
+
+app.get('/review',async(req,res)=>{
+  const cursor = reviewColection.find({})
+  const result = await cursor.toArray()
+  res.send(result)
+  // console.log(result)
+})
+
+
+
+//get one from service
+
+ app.get('/products/:id',async(req,res)=>{
+  const id = req.params.id
+  console.log(id)
+  if(id){
+    // console.log(id)
+  const query = { _id: ObjectId(id) }
+  const result = await productColection.findOne(query)
+  res.send(result)
+  // console.log(result)h
+  
+
+  }
+  
+})
+
+   //add poducts  by post method
+app.post('/products',async(req,res)=>{
+
+  const newProduct = req.body;
+
+  const result = await productColection.insertOne(newProduct)
+  res.send(result)
+  console.log(result)
+
+})
+
+
 
 
 app.get('/users',async(req,res)=>{
@@ -85,10 +131,11 @@ app.get('/orders',async(req,res)=>{
   console.log(result)
 })
 
+
 app.get('/orders/:email', async(req,res)=>{
 const email = req.params.email
 console.log(email)
-const result = OrdersColection.find({email:email}).toArray((er,result)=>{
+const result = await OrdersColection.find({email:email}).toArray((er,result)=>{
   console.log(er,result)
   res.send(result)
 
@@ -109,16 +156,7 @@ app.put('/users/admin',async(req,res)=>{
   res.json(result);
 })
 
-  //add poducts  by post method
-    app.post('/products',async(req,res)=>{
 
-      const newProduct = req.body;
-
-      const result = await productColection.insertOne(newProduct)
-      res.send(result)
-      console.log(result)
-
-    })
 
 
 app.delete("/products/:id",async(req,res)=>{
@@ -150,9 +188,18 @@ app.put('/orders/:id', async (req, res) => {
   };
 
   const result = await OrdersColection.updateOne(filter, updateDoc, options);
-  // console.log("update", result);
+  console.log("update", result);
   res.send(result)
 })
+
+
+ app.post('/review',async(req,res)=>{
+  const newReview = req.body;
+  const result = await reviewColection.insertOne(newReview)
+  res.send(result)
+  console.log(result)
+})
+
 
 
   // client.close();
