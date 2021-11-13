@@ -39,6 +39,24 @@ app.get('/products',async(req,res)=>{
   // console.log(result)
 })
 
+    //get one from service
+
+     app.get('/products/single/:id',async(req,res)=>{
+      const id = req.params.id
+      console.log(id)
+      if(id){
+        // console.log(id)
+      const query = { _id: ObjectId(id) }
+      const result = await productColection.findOne(query)
+      res.send(result)
+      // console.log(result)h
+      
+
+      }
+      
+    })
+
+
 app.get('/review',async(req,res)=>{
   const cursor = reviewColection.find({})
   const result = await cursor.toArray()
@@ -47,6 +65,14 @@ app.get('/review',async(req,res)=>{
 })
 
 
+   //delete a service
+    app.delete("/products/:id",async(req,res)=>{
+      const id = req.params.id
+      console.log(id)
+      const result =  await productColection.deleteOne({_id:ObjectId(id)})
+      // console.log(result)
+      res.send(result)
+    })
 
 //get one from service
 
