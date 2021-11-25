@@ -22,7 +22,7 @@ client.connect(err => {
   const reviewColection = client.db("Best-Drone").collection("Review");
 
 
-// perform actions on the collection object
+//  actions on the collection object
 
 //get all service
 
